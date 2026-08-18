@@ -103,6 +103,14 @@ export interface Copy {
     close: string
     status: Record<'production' | 'active' | 'academic', string>
     filterAll: string
+    /** Textos propios de la ficha completa del proyecto, que es una página aparte. */
+    detail: {
+      back: string
+      next: string
+      caseStudy: string
+      year: string
+      repo: string
+    }
     sections: {
       challenge: string
       solution: string
@@ -193,6 +201,13 @@ const es: Copy = {
     close: 'Cerrar',
     status: { production: 'En producción', active: 'En desarrollo', academic: 'Universitario' },
     filterAll: 'Todos',
+    detail: {
+      back: 'Volver a proyectos',
+      next: 'Siguiente proyecto',
+      caseStudy: 'Caso de estudio',
+      year: 'Año',
+      repo: 'Repositorio',
+    },
     sections: {
       challenge: 'El reto',
       solution: 'Qué construí',
@@ -288,6 +303,13 @@ const en: Copy = {
     close: 'Close',
     status: { production: 'In production', active: 'In development', academic: 'University' },
     filterAll: 'All',
+    detail: {
+      back: 'Back to work',
+      next: 'Next project',
+      caseStudy: 'Case study',
+      year: 'Year',
+      repo: 'Repository',
+    },
     sections: {
       challenge: 'The challenge',
       solution: 'What I built',

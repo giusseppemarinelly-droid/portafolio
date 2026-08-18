@@ -1,6 +1,7 @@
 import { useI18n } from '../i18n/LanguageProvider'
 import { stackGroups } from '../data/stack'
 import { Section } from './Section'
+import { TechChip } from './TechIcon'
 
 export function StackSection() {
   const { t, locale } = useI18n()
@@ -19,14 +20,12 @@ export function StackSection() {
         </p>
       }
     >
-      <div className="grid gap-px overflow-hidden rounded-sm border border-line bg-line md:grid-cols-2">
+      <div
+        className="fill-row-2 grid gap-px overflow-hidden rounded-sm border border-line bg-line md:grid-cols-2"
+        data-reveal-stagger
+      >
         {stackGroups.map((group, i) => (
-          <article
-            key={group.id}
-            className="flex flex-col bg-bg p-6 md:p-8"
-            data-reveal
-            style={{ ['--reveal-delay' as string]: `${i * 80}ms` }}
-          >
+          <article key={group.id} className="flex flex-col bg-bg p-6 md:p-8">
             <header className="flex items-baseline justify-between gap-4">
               <h3 className="font-sans text-base font-medium tracking-tight text-ink">
                 {group.label[locale]}
@@ -41,9 +40,7 @@ export function StackSection() {
             <ul className="mt-6 flex flex-wrap gap-2">
               {group.items.map((item) => (
                 <li key={item.name}>
-                  <span className={`chip ${item.level === 'core' ? 'chip-core' : ''}`}>
-                    {item.name}
-                  </span>
+                  <TechChip name={item.name} core={item.level === 'core'} />
                 </li>
               ))}
             </ul>

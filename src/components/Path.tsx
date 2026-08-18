@@ -1,22 +1,18 @@
 import { useI18n } from '../i18n/LanguageProvider'
 import { timeline } from '../data/copy'
 import { Section } from './Section'
+import { TechChip } from './TechIcon'
 
 export function Path() {
   const { t, locale } = useI18n()
 
   return (
     <Section id="path" no="04" label={t.path.label} heading={t.path.heading} lede={t.path.lede}>
-      <ol className="relative border-l border-line pl-6 md:pl-10">
+      <ol className="relative border-l border-line pl-6 md:pl-10" data-reveal-stagger>
         {timeline.map((entry, i) => {
           const c = entry.copy[locale]
           return (
-            <li
-              key={entry.id}
-              className="relative pb-12 last:pb-0"
-              data-reveal
-              style={{ ['--reveal-delay' as string]: `${i * 100}ms` }}
-            >
+            <li key={entry.id} className="relative pb-12 last:pb-0">
               {/* Marca del hito, centrada sobre la línea vertical. */}
               <span
                 className="absolute -left-[1.65rem] top-1.5 grid size-3 place-items-center rounded-full border border-line-strong bg-bg md:-left-[2.65rem]"
@@ -35,7 +31,7 @@ export function Path() {
                 <ul className="mt-5 flex flex-wrap gap-1.5">
                   {entry.tags.map((tag) => (
                     <li key={tag}>
-                      <span className="chip">{tag}</span>
+                      <TechChip name={tag} fallback="none" />
                     </li>
                   ))}
                 </ul>

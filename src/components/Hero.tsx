@@ -19,10 +19,7 @@ export function Hero() {
       <div className="grid-veil pointer-events-none absolute inset-0 -z-10 opacity-70" aria-hidden="true" />
 
       <div className="shell w-full">
-        <p
-          className="eyebrow animate-enter flex items-center gap-2.5"
-          style={{ ['--enter-delay' as string]: '80ms' }}
-        >
+        <p className="eyebrow flex items-center gap-2.5" data-intro>
           <span className="relative grid size-2 place-items-center">
             <span className="animate-live absolute inset-0 rounded-full bg-cool" />
           </span>
@@ -30,51 +27,46 @@ export function Hero() {
         </p>
 
         {/* Titular en un solo tono: el color vive en los controles y las cifras,
-            no en media frase. */}
+            no en media frase.
+
+            Cada línea va dentro de una máscara con `overflow-hidden` para que
+            pueda subir desde debajo de su propia caja. El relleno inferior con
+            margen negativo que lo compensa está ahí porque, con `leading` por
+            debajo de 1, la máscara le cortaría la cola a la «g» y la «y». */}
         <h1 className="mt-7 max-w-5xl text-[clamp(2.5rem,7.4vw,5.5rem)] leading-[0.94]">
-          <span className="animate-enter block" style={{ ['--enter-delay' as string]: '160ms' }}>
-            {t.hero.titleTop}
+          <span className="-mb-[0.14em] block overflow-hidden pb-[0.14em]">
+            <span className="block" data-intro-line>
+              {t.hero.titleTop}
+            </span>
           </span>
-          <span
-            className="animate-enter block text-muted"
-            style={{ ['--enter-delay' as string]: '260ms' }}
-          >
-            {t.hero.titleBottom}
+          <span className="-mb-[0.14em] block overflow-hidden pb-[0.14em]">
+            <span className="block text-muted" data-intro-line>
+              {t.hero.titleBottom}
+            </span>
           </span>
         </h1>
 
         <p
-          className="animate-enter mt-8 max-w-2xl text-[1.0625rem] leading-relaxed text-ink-soft md:text-lg"
-          style={{ ['--enter-delay' as string]: '380ms' }}
+          className="mt-8 max-w-2xl text-[1.0625rem] leading-relaxed text-ink-soft md:text-lg"
+          data-intro
         >
           {t.hero.lede}
         </p>
 
-        <div
-          className="animate-enter mt-10 flex flex-wrap items-center gap-3"
-          style={{ ['--enter-delay' as string]: '470ms' }}
-        >
-          <button
-            type="button"
-            onClick={() => scrollTo('work')}
-            className="btn-primary group"
-          >
+        <div className="mt-10 flex flex-wrap items-center gap-3" data-intro>
+          <button type="button" onClick={() => scrollTo('work')} className="btn-primary group">
             {t.hero.ctaWork}
             <ArrowIcon className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
           </button>
-          <button
-            type="button"
-            onClick={() => scrollTo('contact')}
-            className="btn-ghost"
-          >
+          <button type="button" onClick={() => scrollTo('contact')} className="btn-ghost">
             {t.hero.ctaContact}
           </button>
         </div>
 
         {/* Cabecera de datos: quién, dónde y cuánto hay construido. */}
         <dl
-          className="animate-enter mt-16 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-line pt-7 md:mt-20 md:grid-cols-4"
-          style={{ ['--enter-delay' as string]: '560ms' }}
+          className="mt-16 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-line pt-7 md:mt-20 md:grid-cols-4"
+          data-intro
         >
           {[
             { k: locale === 'es' ? 'Rol' : 'Role', v: t.meta.role },
@@ -83,7 +75,10 @@ export function Hero() {
               k: locale === 'es' ? 'En producción' : 'In production',
               v: `${inProduction} ${locale === 'es' ? 'sistemas' : 'systems'}`,
             },
-            { k: locale === 'es' ? 'Formación' : 'Studying', v: locale === 'es' ? 'Ing. en Computación' : 'Computer Engineering' },
+            {
+              k: locale === 'es' ? 'Formación' : 'Studying',
+              v: locale === 'es' ? 'Ing. en Computación' : 'Computer Engineering',
+            },
           ].map((item) => (
             <div key={item.k}>
               <dt className="eyebrow">{item.k}</dt>
@@ -95,8 +90,8 @@ export function Hero() {
         <button
           type="button"
           onClick={() => scrollTo('about')}
-          className="animate-enter mt-10 hidden items-center gap-2 self-start font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted transition-colors hover:text-ink md:inline-flex"
-          style={{ ['--enter-delay' as string]: '680ms' }}
+          className="mt-10 hidden items-center gap-2 self-start font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted transition-colors hover:text-ink md:inline-flex"
+          data-intro
         >
           <ArrowDownIcon className="size-3.5" />
           {t.hero.scroll}

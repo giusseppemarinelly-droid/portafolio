@@ -24,22 +24,12 @@ export function Section({ id, no, label, heading, lede, children, aside }: Secti
               {label}
             </p>
           </div>
-          <div className="md:col-span-8">
-            <h2
-              className="max-w-2xl text-[clamp(1.85rem,4.2vw,3rem)]"
-              data-reveal
-              style={{ ['--reveal-delay' as string]: '60ms' }}
-            >
-              {heading}
-            </h2>
+          {/* Titular, entradilla y filtros entran en cascada como un bloque:
+              son una sola unidad de lectura, no tres elementos independientes. */}
+          <div className="md:col-span-8" data-reveal-stagger>
+            <h2 className="max-w-2xl text-[clamp(1.85rem,4.2vw,3rem)]">{heading}</h2>
             {lede && (
-              <p
-                className="mt-5 max-w-xl text-[0.975rem] leading-relaxed text-muted"
-                data-reveal
-                style={{ ['--reveal-delay' as string]: '120ms' }}
-              >
-                {lede}
-              </p>
+              <p className="mt-5 max-w-xl text-[0.975rem] leading-relaxed text-muted">{lede}</p>
             )}
             {aside}
           </div>

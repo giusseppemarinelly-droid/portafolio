@@ -1,16 +1,19 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { animate, stagger, utils } from 'animejs'
 import { useI18n } from '../i18n/LanguageProvider'
 import { useTheme } from '../hooks/useTheme'
-import { useActiveSection } from '../hooks/useReveal'
+import { useActiveSection } from '../hooks/useActiveSection'
+import { useRouter } from '../router/Router'
 import { profile } from '../data/copy'
 import { CloseIcon, MenuIcon, MoonIcon, SunIcon } from './Icons'
 
 const SECTION_IDS = ['about', 'stack', 'work', 'path', 'contact'] as const
 type SectionId = (typeof SECTION_IDS)[number]
 
-/** Referencia estable: si se recreara en cada render, el observador de sección
- *  se desmontaría y volvería a montarse con cada scroll. */
+/** Referencias estables: si se recrearan en cada render, el observador de
+ *  sección se desmontaría y volvería a montarse con cada scroll. */
 const SECTION_ID_LIST: readonly string[] = SECTION_IDS
+const EMPTY_IDS: readonly string[] = []
 
 export function Nav() {
   const { t, locale, setLocale } = useI18n()
@@ -19,7 +22,45 @@ export function Nav() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string>('')
 
-  useActiveSection(SECTION_ID_LIST, setActive)
+  const menuRef = useRef<HTMLUListElement>(null)
+  const { path, navigate } = useRouter()
+  const onHome = path === '/'
+
+  // Fuera de la portada no hay secciones que observar, y dejar el observador
+  // activo marcaría como activa la última sección vista antes de salir.
+  useActiveSection(onHome ? SECTION_ID_LIST : EMPTY_IDS, setActive)
+
+  /**
+   * Entrada escalonada de las opciones del menú móvil.
+   *
+   * Al cerrarlo vuelven a opacidad cero aunque no se vean: la capa que las
+   * contiene se desvanece con una transición CSS, y si las opciones se quedaran
+   * visibles, la siguiente apertura las mostraría ya puestas antes de animarlas.
+   */
+  useEffect(() => {
+    const list = menuRef.current
+    if (!list) return
+    const items = Array.from(list.children) as HTMLElement[]
+    if (items.length === 0) return
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      utils.set(items, { opacity: 1, translateY: 0 })
+      return
+    }
+
+    if (!open) {
+      utils.set(items, { opacity: 0 })
+      return
+    }
+
+    animate(items, {
+      opacity: [0, 1],
+      translateY: [18, 0],
+      duration: 620,
+      ease: 'out(3)',
+      delay: stagger(55),
+    })
+  }, [open])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -43,10 +84,33 @@ export function Nav() {
     return () => window.removeEventListener('keydown', onKey)
   }, [open])
 
-  const go = useCallback((id: SectionId) => {
-    setOpen(false)
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [])
+  /**
+   * Salta a una sección de la portada.
+   *
+   * Desde la ficha de un proyecto esas secciones no están en el documento, así
+   * que primero hay que volver a la portada y solo después desplazarse. El
+   * `requestAnimationFrame` doble no es superstición: uno espera a que React
+   * pinte la portada y el otro a que el navegador la haya maquetado — sin la
+   * segunda espera, `scrollIntoView` mide un documento que aún no tiene la
+   * altura definitiva y se queda corto.
+   */
+  const go = useCallback(
+    (id: SectionId) => {
+      setOpen(false)
+
+      const scrollToSection = () =>
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+      if (onHome) {
+        scrollToSection()
+        return
+      }
+
+      navigate('/')
+      requestAnimationFrame(() => requestAnimationFrame(scrollToSection))
+    },
+    [onHome, navigate],
+  )
 
   return (
     <>
@@ -58,6 +122,7 @@ export function Nav() {
       </a>
 
       <header
+        style={{ viewTransitionName: 'site-nav' } as React.CSSProperties}
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
           scrolled
             ? 'border-b border-line bg-bg/80 backdrop-blur-xl supports-[backdrop-filter]:bg-bg/65'
@@ -65,12 +130,17 @@ export function Nav() {
         }`}
       >
         <nav className="shell flex h-16 items-center justify-between gap-4 md:h-18">
+          {/* Desde una ficha, la firma vuelve a la portada; en la portada solo
+              sube arriba. En los dos casos el `href` apunta a «/» para que el
+              enlace siga funcionando con Ctrl+clic y sin JavaScript. */}
           <a
-            href="#top"
+            href="/"
             className="group flex items-center gap-2.5"
             onClick={(e) => {
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return
               e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
+              if (onHome) window.scrollTo({ top: 0, behavior: 'smooth' })
+              else navigate('/')
             }}
           >
             <span className="grid size-8 place-items-center rounded-full border border-line-strong font-mono text-[0.7rem] tracking-wider text-ink transition-colors group-hover:border-accent group-hover:text-accent">
@@ -151,9 +221,9 @@ export function Nav() {
           open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
-        <ul className="shell flex h-full flex-col justify-center gap-2">
+        <ul ref={menuRef} className="shell flex h-full flex-col justify-center gap-2">
           {SECTION_IDS.map((id, i) => (
-            <li key={id} style={{ ['--enter-delay' as string]: `${i * 45}ms` }} className={open ? 'animate-enter' : ''}>
+            <li key={id}>
               <button
                 type="button"
                 onClick={() => go(id)}

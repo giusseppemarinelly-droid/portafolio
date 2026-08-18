@@ -160,6 +160,84 @@
 }
 
 @layer components {
+  /* ---------------------------------------------------------------
+     Rejillas de retícula continua sin filas a medias.
+
+     Estas rejillas dibujan sus líneas con un fondo del color de la línea y
+     separaciones de un píxel entre celdas. Es lo que les da el aspecto de
+     retícula cosida, pero tiene un efecto secundario feo: cuando el número de
+     elementos no llena la última fila, el trozo que sobra queda pintado del
+     color de la línea y enmarcado por el borde exterior — se lee como un hueco
+     roto, no como el final de la lista. Pasaba al filtrar los proyectos por
+     «En desarrollo», que deja uno solo en una rejilla de dos columnas.
+
+     La solución es que el último elemento se ensanche hasta cerrar su fila.
+     Las reglas van por número de columnas y dentro del mismo punto de corte
+     que usa cada rejilla en su JSX; si allí cambian las columnas, hay que
+     cambiarlas aquí también.
+     --------------------------------------------------------------- */
+  /* Dos columnas. Esta no necesita punto de corte: `1 / -1` significa «toda la
+     fila», así que cuando la rejilla está en una sola columna no cambia nada. */
+  .fill-row-2 > *:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* Tres y cuatro columnas sí van acotadas, y no por pulcritud: `span 2` en una
+     rejilla de una sola columna se inventaría una segunda columna implícita y
+     rompería la maquetación en móvil. Los anchos son los de `md` y `sm` de
+     Tailwind, que son los que usan las rejillas de contacto y de cifras. */
+  @media (min-width: 768px) {
+    .fill-row-3 > *:last-child:nth-child(3n + 1) {
+      grid-column: 1 / -1;
+    }
+    .fill-row-3 > *:last-child:nth-child(3n + 2) {
+      grid-column: span 2;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .fill-row-4 > *:last-child:nth-child(4n + 1) {
+      grid-column: 1 / -1;
+    }
+    .fill-row-4 > *:last-child:nth-child(4n + 2) {
+      grid-column: span 3;
+    }
+    .fill-row-4 > *:last-child:nth-child(4n + 3) {
+      grid-column: span 2;
+    }
+  }
+
+  /* La rejilla de tecnologías de la ficha cambia de columnas dos veces
+     —2, luego 3, luego 4— así que necesita sus propios tramos. Van acotados por
+     arriba y por abajo para que sean excluyentes entre sí: si se solaparan,
+     ganaría la última regla escrita y no la que corresponde al ancho real. */
+  @media (max-width: 639px) {
+    .fill-row-tech > *:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .fill-row-tech > *:last-child:nth-child(3n + 1) {
+      grid-column: 1 / -1;
+    }
+    .fill-row-tech > *:last-child:nth-child(3n + 2) {
+      grid-column: span 2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .fill-row-tech > *:last-child:nth-child(4n + 1) {
+      grid-column: 1 / -1;
+    }
+    .fill-row-tech > *:last-child:nth-child(4n + 2) {
+      grid-column: span 3;
+    }
+    .fill-row-tech > *:last-child:nth-child(4n + 3) {
+      grid-column: span 2;
+    }
+  }
+
   /* Etiqueta de sección: número + nombre, en monoespaciada. */
   .eyebrow {
     font-family: var(--font-mono);
@@ -189,6 +267,93 @@
     border-color: color-mix(in oklab, var(--accent) 40%, transparent);
     background: var(--accent-soft);
     color: var(--accent);
+  }
+
+  /* Chip con logo de marca. El logo va al color del texto en reposo: una fila
+     de logotipos a todo color se lee como una pared de calcomanías, no como
+     parte del diseño. El color real de la marca aparece solo al señalarlo. */
+  .tech-chip {
+    padding-left: 0.5rem;
+    gap: 0.4375rem;
+  }
+
+  .tech-chip:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+
+  .tech-logo {
+    color: var(--muted);
+    transition: color 0.28s ease;
+  }
+
+  /* En los chips de uso diario el logo va al acento igual que el texto: dejarlo
+     gris rompía el chip en dos tonos y le quitaba el énfasis que busca. */
+  .chip-core .tech-logo,
+  .chip-core .tech-mono {
+    color: var(--accent);
+    border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+  }
+
+  .tech-chip:hover .tech-logo {
+    color: var(--brand);
+  }
+
+  /* Celda de la rejilla de tecnologías de la ficha. Repite el gesto del chip
+     —el logo toma el color real de la marca al señalarlo— porque si no, la
+     misma tecnología reacciona en la tarjeta de la portada y se queda muerta
+     en la ficha, que es justo donde se mira con calma. */
+  .tech-cell .tech-logo {
+    transition: color 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tech-cell:hover .tech-logo {
+    color: var(--brand);
+    transform: scale(1.12);
+  }
+
+  .tech-cell:hover .tech-mono {
+    border-color: var(--ink-soft);
+    color: var(--ink);
+  }
+
+  .tech-cell .tech-name {
+    transition: color 0.28s ease;
+  }
+
+  .tech-cell:hover .tech-name {
+    color: var(--ink);
+  }
+
+  /* Reserva para las tecnologías sin logo de marca — WebSocket, REST, Alembic,
+     openpyxl, el propio patrón ReAct: su inicial en un recuadro, en vez de
+     colgarles el logotipo de otra cosa que se parezca de nombre. */
+  .tech-mono {
+    border: 1px solid var(--line-strong);
+    color: var(--muted);
+    font-size: 0.5rem;
+    font-weight: 500;
+    line-height: 1;
+    transition: color 0.28s ease, border-color 0.28s ease;
+  }
+
+  .tech-chip:hover .tech-mono {
+    border-color: var(--ink-soft);
+    color: var(--ink);
+  }
+
+  /* Icono de la aplicación en la tarjeta de proyecto. */
+  .project-logo {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 0.625rem;
+    background: var(--surface-2);
+    transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .group:hover .project-logo {
+    border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+    transform: translateY(-2px);
   }
 
   /* Botón principal: acento sólido, tipografía de titular. */
@@ -233,20 +398,100 @@
   }
 }
 
-@layer utilities {
-  /* Aparición al hacer scroll: se activa con data-revealed desde useReveal(). */
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(18px);
-    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: var(--reveal-delay, 0ms);
-  }
+/* ---------------------------------------------------------------
+   Transición entre la portada y la ficha de un proyecto.
 
-  [data-reveal][data-revealed='true'] {
-    opacity: 1;
-    transform: none;
+   El icono de la aplicación lleva el mismo `view-transition-name` en la
+   tarjeta y en la cabecera de la ficha, así que el navegador lo trata como
+   un solo objeto que cambia de sitio y de tamaño, en lugar de fundir dos
+   pantallas. El resto de la página se cruza por debajo, desplazándose muy
+   poco: si el fondo viajara tanto como el icono, el gesto se leería como un
+   carrusel y no como un acercamiento.
+
+   Va fuera de las capas de Tailwind porque los pseudoelementos de
+   `::view-transition-*` cuelgan del documento, no de ningún componente.
+   --------------------------------------------------------------- */
+@keyframes gm-page-out {
+  to {
+    opacity: 0;
   }
+}
+
+@keyframes gm-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* Las dos capas se cruzan a la vez y muy rápido.
+   Antes la vieja tardaba 0,32 s en irse y la nueva entraba con retardo: eso no
+   se lee como una transición, se lee como «sigo viendo la portada y luego
+   aparece el proyecto». Con la salida en 0,16 s y la entrada arrancando en el
+   mismo instante, el cruce se percibe como inmediato y lo que da la sensación de
+   movimiento es el icono, que es lo que debe llevar el gesto. */
+::view-transition-old(root) {
+  animation: gm-page-out 0.16s linear both;
+}
+
+::view-transition-new(root) {
+  animation: gm-page-in 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* La barra de navegación es idéntica en las dos vistas: con nombre propio queda
+   fuera de la instantánea de la página y no parpadea, así que da la sensación de
+   que es el contenido el que cambia por debajo de una cabecera que no se mueve. */
+::view-transition-group(site-nav) {
+  animation: none;
+}
+
+::view-transition-old(site-nav),
+::view-transition-new(site-nav) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* El icono se mueve más despacio que el fondo y con una curva que frena al
+   final: es lo que hace que parezca que se acerca en lugar de saltar. */
+::view-transition-group(project-mark) {
+  animation-duration: 0.62s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(project-mark),
+::view-transition-new(project-mark) {
+  /* Sin fundido cruzado entre los dos estados del icono: es el mismo objeto,
+     y difuminar uno sobre otro delata que son dos capturas distintas. */
+  animation: none;
+  mix-blend-mode: normal;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-group(project-mark) {
+    animation: none !important;
+  }
+}
+
+/* Al imprimir no hay scroll, así que ningún revelado se dispararía y la hoja
+   saldría casi vacía: los elementos que aún no han entrado en pantalla siguen
+   con `opacity: 0` puesto en línea por Anime.js. El `!important` es lo que hace
+   falta para ganarle a un estilo en línea. Alguien imprimiendo el portafolio o
+   guardándolo en PDF es un caso real, no una rareza. */
+@media print {
+  [data-anim-ready],
+  [data-anim-ready] * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@layer utilities {
+  /* El revelado al hacer scroll lo gobierna Anime.js desde useScrollReveals().
+     Aquí no se oculta nada a propósito: si el JS no cargara, la página tiene que
+     quedarse visible en lugar de en blanco. */
 
   /* Grano fino sobre todo el sitio: le quita el plano digital al fondo
      sin recurrir a degradados decorativos. */
@@ -298,22 +543,6 @@
   .link-underline:hover,
   .link-underline:focus-visible {
     background-size: 100% 1px;
-  }
-
-  @keyframes gm-fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(24px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .animate-enter {
-    animation: gm-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: var(--enter-delay, 0ms);
   }
 
   @keyframes gm-pulse-dot {

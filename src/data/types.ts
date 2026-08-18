@@ -36,6 +36,12 @@ export interface Project {
   status: ProjectStatus
   stack: string[]
   arch: ArchNode[]
+  /**
+   * Icono de la aplicación, servido desde `public/projects/`. Opcional: los
+   * proyectos que no tienen uno propio muestran su número en la tarjeta, que es
+   * mejor que inventarles un logotipo.
+   */
+  logo?: string
   link?: { href: string; label: string }
   copy: Record<Locale, ProjectCopy>
 }

@@ -1,34 +1,52 @@
+import { useEffect } from 'react'
 import { useI18n } from './i18n/LanguageProvider'
-import { useReveal } from './hooks/useReveal'
+import { useCounters, useReadingProgress, useScrollReveals } from './hooks/useAnime'
+import { projects } from './data/projects'
 import { Nav } from './components/Nav'
-import { Hero } from './components/Hero'
-import { Ticker } from './components/Ticker'
-import { About } from './components/About'
-import { StackSection } from './components/StackSection'
-import { Work } from './components/Work'
-import { Path } from './components/Path'
-import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
+import { Home } from './pages/Home'
+import { ProjectPage } from './pages/ProjectPage'
+import { projectIdFromPath, useRouter } from './router/Router'
 
 export default function App() {
-  const { locale } = useI18n()
-  useReveal()
+  const { locale, t } = useI18n()
+  const { path, navigate } = useRouter()
+
+  const projectId = projectIdFromPath(path)
+  const project = projectId ? projects.find((p) => p.id === projectId) : undefined
+
+  // Una URL de proyecto que no existe no debe dejar la página en blanco: se
+  // corrige la barra de direcciones y se vuelve a la portada.
+  useEffect(() => {
+    if (projectId && !project) navigate('/')
+  }, [projectId, project, navigate])
+
+  // El título de la pestaña acompaña a la ruta: es lo que se ve al compartir el
+  // enlace de un proyecto o al tener varias pestañas abiertas.
+  useEffect(() => {
+    const base = 'Giusseppe Marinelly — ' + t.meta.role
+    document.title = project ? `${project.copy[locale].title} · ${base}` : base
+  }, [project, locale, t.meta.role])
+
+  // La clave por ruta e idioma reprocesa los revelados: los marcadores viven en
+  // el DOM y sin reinicio los nodos nuevos heredarían el estado de los viejos.
+  useScrollReveals(`${path}-${locale}`)
+  useCounters()
+  useReadingProgress('#reading-progress')
 
   return (
-    // La clave por idioma reinicia las animaciones de entrada al cambiar de idioma,
-    // en lugar de dejar medio sitio traducido con el texto viejo aún animándose.
     <div key={locale}>
       <div className="noise-layer" aria-hidden="true" />
+
+      {/* Progreso de lectura. Solo se nota en las fichas, que son largas. */}
+      <div
+        className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[2px] origin-left scale-x-0 bg-accent"
+        id="reading-progress"
+        aria-hidden="true"
+      />
+
       <Nav />
-      <main>
-        <Hero />
-        <Ticker />
-        <About />
-        <StackSection />
-        <Work />
-        <Path />
-        <Contact />
-      </main>
+      <main>{project ? <ProjectPage key={project.id} project={project} /> : <Home />}</main>
       <Footer />
     </div>
   )

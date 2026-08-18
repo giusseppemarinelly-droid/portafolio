@@ -31,6 +31,7 @@ export const projects: Project[] = [
       { label: 'Claude API', kind: 'external', via: 'visión · chat' },
       { label: 'Expo Push · SMTP', kind: 'external', via: 'alertas' },
     ],
+    logo: '/projects/inventario.png',
     copy: {
       es: {
         title: 'Sistema de Gestión de Inventario y Logística',
@@ -109,6 +110,7 @@ export const projects: Project[] = [
       { label: 'PostgreSQL', kind: 'data', via: 'SQLAlchemy' },
       { label: 'Báscula Toledo', kind: 'hardware', via: 'RS-232' },
     ],
+    logo: '/projects/romana.svg',
     copy: {
       es: {
         title: 'Romana Digital — Control de pesaje de camiones',
@@ -182,6 +184,7 @@ export const projects: Project[] = [
       { label: 'PostgreSQL', kind: 'data', via: 'auto-bootstrap' },
       { label: 'Recordatorios', kind: 'external', via: 'cron · push' },
     ],
+    logo: '/projects/vehiculos.png',
     copy: {
       es: {
         title: 'Control de Vehículos y Mantenimiento',
@@ -310,6 +313,7 @@ export const projects: Project[] = [
       { label: 'PostgreSQL', kind: 'data', via: 'esquema tipado' },
       { label: 'Mapas', kind: 'external', via: 'react-native-maps' },
     ],
+    logo: '/projects/epa.png',
     copy: {
       es: {
         title: 'Epa — Red de encuentro universitario',

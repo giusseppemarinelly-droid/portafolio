@@ -28,29 +28,23 @@ export function Contact() {
           {t.contact.label}
         </p>
 
-        <h2
-          className="mt-8 max-w-3xl text-[clamp(2.25rem,6.5vw,4.5rem)] leading-[1.02]"
-          data-reveal
-          style={{ ['--reveal-delay' as string]: '60ms' }}
-        >
+        <h2 className="mt-8 max-w-3xl text-[clamp(2.25rem,6.5vw,4.5rem)] leading-[1.02]" data-reveal>
           {t.contact.heading}
         </h2>
 
-        <p
-          className="mt-6 max-w-lg text-[1.0625rem] leading-relaxed text-ink-soft"
-          data-reveal
-          style={{ ['--reveal-delay' as string]: '120ms' }}
-        >
+        <p className="mt-6 max-w-lg text-[1.0625rem] leading-relaxed text-ink-soft" data-reveal>
           {t.contact.lede}
         </p>
 
-        <div className="mt-12 grid gap-px overflow-hidden rounded-sm border border-line bg-line md:grid-cols-3">
+        <div
+          className="fill-row-3 mt-12 grid gap-px overflow-hidden rounded-sm border border-line bg-line md:grid-cols-3"
+          data-reveal-stagger
+        >
           <ContactCard
             href={`mailto:${profile.email}`}
             icon={<MailIcon />}
             label={t.contact.emailLabel}
             value={profile.email}
-            delay={0}
             action={
               <button
                 type="button"
@@ -68,14 +62,12 @@ export function Contact() {
             icon={<WhatsAppIcon />}
             label={t.contact.whatsappLabel}
             value={profile.phoneDisplay}
-            delay={80}
           />
           <ContactCard
             href={`tel:${profile.phoneIntl}`}
             icon={<PhoneIcon />}
             label={t.contact.phoneLabel}
             value={profile.phoneIntlDisplay}
-            delay={160}
           />
         </div>
 
@@ -95,7 +87,6 @@ function ContactCard({
   icon,
   label,
   value,
-  delay,
   external,
   action,
 }: {
@@ -103,18 +94,14 @@ function ContactCard({
   icon: React.ReactNode
   label: string
   value: string
-  delay: number
   external?: boolean
   action?: React.ReactNode
 }) {
   // El enlace cubre la tarjeta con un pseudo-elemento en vez de envolverla:
   // así el botón de copiar no queda anidado dentro de un <a>, que es inválido.
+  // El escalonado lo pone el grupo `data-reveal-stagger` del contenedor.
   return (
-    <div
-      className="group relative flex flex-col gap-5 bg-bg p-6 transition-colors duration-500 hover:bg-surface md:p-8"
-      data-reveal
-      style={{ ['--reveal-delay' as string]: `${delay}ms` }}
-    >
+    <div className="group relative flex flex-col gap-5 bg-bg p-6 transition-colors duration-500 hover:bg-surface md:p-8">
       <div className="flex items-start justify-between gap-3">
         <span className="text-accent">{icon}</span>
         <ArrowIcon className="size-4 -rotate-45 text-muted transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Romana Digital">
+  <!--
+    Marca provisional para Romana Digital: una balanza de platillos, que es
+    literalmente lo que hace el sistema — pesar. Trazo abierto sobre azul noche
+    para que conviva con los iconos de las otras aplicaciones sin competir con
+    ellos, y en SVG porque el icono se ve a 44 px en la tarjeta y a 96 px en la
+    ficha: un PNG obligaría a mantener dos tamaños.
+  -->
+  <rect width="64" height="64" rx="14" fill="#141a2e"/>
+  <g fill="none" stroke="#f4f6fb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Fiel y brazos -->
+    <circle cx="32" cy="13.5" r="2.8"/>
+    <path d="M29.6 15.2 17.4 20.6M34.4 15.2 46.6 20.6"/>
+    <circle cx="15.4" cy="21.8" r="2.2"/>
+    <circle cx="48.6" cy="21.8" r="2.2"/>
+
+    <!-- Tirantes de los platillos -->
+    <path d="M15.4 24.4v4.2M48.6 24.4v4.2"/>
+
+    <!-- Platillo izquierdo -->
+    <path d="M6.4 28.8h18"/>
+    <path d="M6.4 28.8a9 9 0 0 0 18 0"/>
+
+    <!-- Platillo derecho -->
+    <path d="M39.6 28.8h18"/>
+    <path d="M39.6 28.8a9 9 0 0 0 18 0"/>
+
+    <!-- Columna y base -->
+    <path d="M32 16.4v24.2"/>
+    <path d="M24.4 48.2a7.6 7.6 0 0 1 15.2 0"/>
+    <path d="M21.2 48.4h21.6"/>
+  </g>
+</svg>
