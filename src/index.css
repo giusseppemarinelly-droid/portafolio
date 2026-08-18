@@ -3,6 +3,15 @@
 /* El tema se controla con una clase en <html>, no con la preferencia del sistema. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* El sitio anima siempre, también con «reducir movimiento» activado en el
+   sistema. Es una decisión explícita del autor para su portafolio: quiere que
+   se mueva en cualquier teléfono sin que nadie tenga que habilitar nada. En
+   móviles esa preferencia la enciende el ahorro de batería o la escala de
+   animaciones de las opciones de desarrollador, sin que el dueño del teléfono
+   lo sepa, y el sitio se quedaba congelado sin que nadie lo hubiera pedido.
+   No volver a añadir un bloque `@media (prefers-reduced-motion: reduce)` que
+   anule animaciones sin consultarlo antes. */
+
 /* ---------------------------------------------------------------
    Paleta «índigo». Base negra con tinte azulado, tinta casi blanca
    y un violeta azulado como único color de acción. Menta y arena
@@ -84,25 +93,6 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-  }
-
-  /* Con «reducir movimiento» se paran las animaciones que se mueven solas —la
-     cinta de tecnologías, el punto que late— porque nadie las ha pedido y son
-     desplazamiento continuo. Las transiciones, en cambio, solo se acortan en
-     vez de anularse: las dispara el usuario al pasar el cursor o pulsar, y
-     dejarlas en cero hace que la interfaz responda a saltos secos. Esa era una
-     de las razones de que el sitio se viera tosco con la preferencia puesta. */
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 150ms !important;
-    }
   }
 
   body {
@@ -471,14 +461,6 @@
   animation: none;
   mix-blend-mode: normal;
   height: 100%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root),
-  ::view-transition-new(root),
-  ::view-transition-group(project-mark) {
-    animation: none !important;
-  }
 }
 
 /* Al imprimir no hay scroll, así que ningún revelado se dispararía y la hoja

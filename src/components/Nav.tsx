@@ -48,15 +48,12 @@ export function Nav() {
       return
     }
 
-    // Con movimiento reducido entran igual, pero solo por opacidad.
-    const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
     animate(items, {
       opacity: [0, 1],
-      translateY: reducido ? 0 : [18, 0],
-      duration: reducido ? 480 : 620,
-      ease: reducido ? 'outQuad' : 'out(3)',
-      delay: stagger(reducido ? 45 : 55),
+      translateY: [18, 0],
+      duration: 620,
+      ease: 'out(3)',
+      delay: stagger(55),
     })
   }, [open])
 

@@ -44,14 +44,13 @@ type DocumentWithVT = Document & {
  */
 function applyRoute(update: () => void, resetScroll: boolean) {
   const doc = document as DocumentWithVT
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   const commit = () => {
     update()
     if (resetScroll) window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
   }
 
-  if (typeof doc.startViewTransition !== 'function' || reduced) {
+  if (typeof doc.startViewTransition !== 'function') {
     commit()
     return
   }

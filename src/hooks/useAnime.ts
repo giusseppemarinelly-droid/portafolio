@@ -33,10 +33,6 @@ function $$(selector: string, root: ParentNode = document): HTMLElement[] {
   return Array.from(root.querySelectorAll<HTMLElement>(selector))
 }
 
-function prefersReduced() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
 /**
  * Cuánto recorre un elemento al entrar, según el ancho de pantalla.
  *
@@ -52,25 +48,22 @@ function esPantallaEstrecha() {
 }
 
 /**
- * «Reducir movimiento» no quiere decir «sin transiciones».
+ * Parámetros del movimiento según el ancho de pantalla.
  *
- * Lo que esa preferencia busca evitar es el desplazamiento en pantalla, que es
- * lo que provoca mareo o migraña a quien la activa; un fundido de opacidad no
- * mueve nada y no le hace daño a nadie. Antes se quitaba absolutamente todo, y
- * el resultado era una página que aparecía de golpe y se veía muerta —sobre
- * todo en móviles, donde el ahorro de batería activa esta preferencia sin que
- * el dueño del teléfono lo sepa. Ahora, con la preferencia puesta, el contenido
- * sigue apareciendo con un fundido suave pero nada se traslada ni hace paralaje.
+ * El sitio anima siempre, decisión explícita del autor: es su portafolio y
+ * quiere que se mueva en cualquier teléfono sin que nadie tenga que habilitar
+ * nada. Antes se consultaba `prefers-reduced-motion` y con esa preferencia
+ * puesta no se movía nada — y en móviles la activa el ahorro de batería o la
+ * escala de animaciones de las opciones de desarrollador, sin que el dueño del
+ * teléfono lo sepa, así que el sitio se veía muerto sin que nadie lo pidiera.
  */
 function movimiento() {
-  const reducido = prefersReduced()
   const estrecha = esPantallaEstrecha()
   return {
-    reducido,
     /** Recorrido vertical de una entrada normal. */
-    salto: reducido ? 0 : estrecha ? 28 : 14,
+    salto: estrecha ? 28 : 14,
     /** Recorrido de los elementos de un grupo escalonado. */
-    saltoGrupo: reducido ? 0 : estrecha ? 34 : 20,
+    saltoGrupo: estrecha ? 34 : 20,
     /** Margen de disparo: en móvil se adelanta para que dé tiempo a verla. */
     entrada: estrecha ? 'bottom-=120 top' : 'bottom-=60 top',
     entradaGrupo: estrecha ? 'bottom-=130 top' : 'bottom-=70 top',
@@ -100,18 +93,6 @@ export function useHeroIntro() {
 
     const m = movimiento()
 
-    // Con movimiento reducido el titular no puede subir tras su máscara, así que
-    // entra por opacidad; el resto del bloque hace lo mismo, escalonado.
-    if (m.reducido) {
-      utils.set([...lines, ...items], { opacity: 0, translateY: 0 })
-      const suave = createTimeline({ defaults: { ease: 'outQuad' } })
-      suave.add(lines, { opacity: 1, duration: 700, delay: stagger(120) }, 80)
-      suave.add(items, { opacity: 1, duration: 600, delay: stagger(70) }, 300)
-      return () => {
-        suave.pause()
-      }
-    }
-
     utils.set(lines, { translateY: '110%' })
     utils.set(items, { opacity: 0, translateY: m.salto })
 
@@ -140,21 +121,9 @@ export function useScrollReveals(key: string = '') {
     const m = movimiento()
 
     const process = () => {
-      // Titulares tras máscara. Con movimiento reducido no pueden subir, así que
-      // se revelan por opacidad en lugar de quedarse puestos de golpe.
+      // Titulares tras máscara.
       $$('[data-rise]').forEach((el) => {
         if (!claim(el)) return
-
-        if (m.reducido) {
-          utils.set(el, { opacity: 0 })
-          animate(el, {
-            opacity: 1,
-            duration: 650,
-            ease: 'outQuad',
-            autoplay: onScroll({ target: el, enter: m.entrada, repeat: false }),
-          })
-          return
-        }
 
         utils.set(el, { translateY: '110%' })
         animate(el, {
@@ -177,15 +146,15 @@ export function useScrollReveals(key: string = '') {
         utils.set(kids, {
           opacity: 0,
           translateY: m.saltoGrupo,
-          scale: m.reducido ? 1 : 0.985,
+          scale: 0.985,
         })
         animate(kids, {
           opacity: 1,
           translateY: 0,
           scale: 1,
-          duration: m.reducido ? 650 : 1000,
-          ease: m.reducido ? 'outQuad' : 'outQuint',
-          delay: stagger(m.reducido ? 55 : 80),
+          duration: 1000,
+          ease: 'outQuint',
+          delay: stagger(80),
           autoplay: onScroll({ target: group, enter: m.entradaGrupo, repeat: false }),
         })
       })
@@ -197,18 +166,16 @@ export function useScrollReveals(key: string = '') {
         animate(el, {
           opacity: 1,
           translateY: 0,
-          duration: m.reducido ? 650 : 1000,
-          ease: m.reducido ? 'outQuad' : 'outQuint',
+          duration: 1000,
+          ease: 'outQuint',
           autoplay: onScroll({ target: el, enter: m.entrada, repeat: false }),
         })
       })
 
       // Paralaje: el recorrido va atado a la posición del scroll (`sync`), no
-      // disparado una vez al entrar. Este sí se elimina por completo con
-      // movimiento reducido — es desplazamiento puro, no hay versión suave.
+      // disparado una vez al entrar.
       $$('[data-parallax]').forEach((el) => {
         if (!claim(el)) return
-        if (m.reducido) return
         const distance = Number(el.dataset.parallax) || 40
 
         animate(el, {
@@ -240,8 +207,6 @@ export function useScrollReveals(key: string = '') {
  */
 export function useCounters() {
   useLayoutEffect(() => {
-    // Las cifras siguen contando con movimiento reducido: un número que sube no
-    // se desplaza por la pantalla, así que no es lo que esa preferencia evita.
     $$('[data-count]').forEach((el) => {
       if (!claim(el)) return
       const target = Number(el.dataset.count)
