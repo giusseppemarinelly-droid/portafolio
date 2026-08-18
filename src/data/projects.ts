@@ -9,7 +9,7 @@ export const projects: Project[] = [
   {
     id: 'inventario',
     no: '01',
-    year: '2025 — 2026',
+    year: '2026',
     status: 'production',
     stack: [
       'Node.js',

@@ -86,6 +86,12 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  /* Con «reducir movimiento» se paran las animaciones que se mueven solas —la
+     cinta de tecnologías, el punto que late— porque nadie las ha pedido y son
+     desplazamiento continuo. Las transiciones, en cambio, solo se acortan en
+     vez de anularse: las dispara el usuario al pasar el cursor o pulsar, y
+     dejarlas en cero hace que la interfaz responda a saltos secos. Esa era una
+     de las razones de que el sitio se viera tosco con la preferencia puesta. */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -95,7 +101,7 @@
     *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
+      transition-duration: 150ms !important;
     }
   }
 

@@ -43,22 +43,20 @@ export function Nav() {
     const items = Array.from(list.children) as HTMLElement[]
     if (items.length === 0) return
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      utils.set(items, { opacity: 1, translateY: 0 })
-      return
-    }
-
     if (!open) {
       utils.set(items, { opacity: 0 })
       return
     }
 
+    // Con movimiento reducido entran igual, pero solo por opacidad.
+    const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
     animate(items, {
       opacity: [0, 1],
-      translateY: [18, 0],
-      duration: 620,
-      ease: 'out(3)',
-      delay: stagger(55),
+      translateY: reducido ? 0 : [18, 0],
+      duration: reducido ? 480 : 620,
+      ease: reducido ? 'outQuad' : 'out(3)',
+      delay: stagger(reducido ? 45 : 55),
     })
   }, [open])
 
