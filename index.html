@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0a12" />
+
+    <title>Giusseppe Marinelly — Desarrollador Full Stack</title>
+    <meta
+      name="description"
+      content="Desarrollador Full Stack y estudiante de Ingeniería en Computación. Construyo aplicaciones de principio a fin: arquitectura de servidor con Node.js y FastAPI, bases de datos PostgreSQL, interfaces web y móviles con React y React Native, y despliegue en Docker."
+    />
+    <meta name="author" content="Giusseppe Marinelly" />
+    <link rel="canonical" href="https://giusseppemarinelly.com/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Giusseppe Marinelly — Desarrollador Full Stack" />
+    <meta
+      property="og:description"
+      content="Desarrollo soluciones de software completas: servidor, base de datos e interfaz, en web y en móvil."
+    />
+    <meta property="og:locale" content="es_VE" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      // Evita el parpadeo de tema: aplica la preferencia guardada antes del primer paint.
+      try {
+        var saved = localStorage.getItem('gm-theme')
+        var dark = saved ? saved === 'dark' : true
+        document.documentElement.classList.toggle('dark', dark)
+        var lang = localStorage.getItem('gm-lang')
+        if (lang === 'es' || lang === 'en') document.documentElement.lang = lang
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

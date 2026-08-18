@@ -1,0 +1,369 @@
+@import 'tailwindcss';
+
+/* El tema se controla con una clase en <html>, no con la preferencia del sistema. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------
+   Paleta «índigo». Base negra con tinte azulado, tinta casi blanca
+   y un violeta azulado como único color de acción. Menta y arena
+   quedan reservadas para los diagramas, de modo que cada capa del
+   sistema se distinga sin que el sitio caiga en un solo matiz.
+   --------------------------------------------------------------- */
+:root {
+  --bg: #f8f8fb;
+  --bg-deep: #eeeef4;
+  --surface: #ffffff;
+  --surface-2: #f2f2f8;
+  --ink: #121118;
+  --ink-soft: #3d3b4a;
+  --muted: #6a677a;
+  --line: rgb(18 17 24 / 0.11);
+  --line-strong: rgb(18 17 24 / 0.2);
+
+  --accent: #5b46d6;
+  --accent-soft: rgb(91 70 214 / 0.1);
+  --accent-ink: #ffffff;
+  --cool: #0f7a63;
+  --cool-soft: rgb(15 122 99 / 0.1);
+  --clay: #a85c2a;
+  --clay-soft: rgb(168 92 42 / 0.1);
+
+  --noise-opacity: 0.025;
+}
+
+.dark {
+  --bg: #0a0a12;
+  --bg-deep: #06060c;
+  --surface: #111119;
+  --surface-2: #171722;
+  --ink: #eceaf5;
+  --ink-soft: #bbb7cc;
+  --muted: #817d94;
+  --line: rgb(236 234 245 / 0.09);
+  --line-strong: rgb(236 234 245 / 0.18);
+
+  --accent: #8b7bff;
+  --accent-soft: rgb(139 123 255 / 0.14);
+  --accent-ink: #08060f;
+  --cool: #5fd3b4;
+  --cool-soft: rgb(95 211 180 / 0.14);
+  --clay: #e9a06b;
+  --clay-soft: rgb(233 160 107 / 0.14);
+
+  --noise-opacity: 0.04;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-deep: var(--bg-deep);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-cool: var(--cool);
+  --color-cool-soft: var(--cool-soft);
+  --color-clay: var(--clay);
+  --color-clay-soft: var(--clay-soft);
+
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01';
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Space Grotesk pide tracking negativo en tamaños grandes: por defecto
+     abre demasiado y los titulares se ven blandos. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  h3 {
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: 99px;
+    border: 3px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+  }
+}
+
+@layer components {
+  /* Etiqueta de sección: número + nombre, en monoespaciada. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--line);
+    border-radius: 99px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: -0.01em;
+    color: var(--ink-soft);
+    white-space: nowrap;
+    transition: border-color 0.25s ease, color 0.25s ease;
+  }
+
+  .chip-core {
+    border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* Botón principal: acento sólido, tipografía de titular. */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.8125rem 1.5rem;
+    border-radius: 99px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--accent) 60%, transparent);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8125rem 1.5rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 99px;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    transition: border-color 0.25s ease, color 0.25s ease;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+@layer utilities {
+  /* Aparición al hacer scroll: se activa con data-revealed desde useReveal(). */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  [data-reveal][data-revealed='true'] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Grano fino sobre todo el sitio: le quita el plano digital al fondo
+     sin recurrir a degradados decorativos. */
+  .noise-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: var(--noise-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Trama técnica de fondo, desvanecida hacia abajo. */
+  .grid-veil {
+    background-image: linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse 85% 60% at 50% 0%, #000 15%, transparent 80%);
+  }
+
+  /* Contenedor editorial: ancho de lectura cómodo, márgenes generosos. */
+  .shell {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .shell {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .shell {
+      padding-inline: 3.5rem;
+    }
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  @keyframes gm-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .animate-enter {
+    animation: gm-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+
+  @keyframes gm-pulse-dot {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.3;
+      transform: scale(0.8);
+    }
+  }
+
+  .animate-live {
+    animation: gm-pulse-dot 2.4s ease-in-out infinite;
+  }
+
+  @keyframes gm-dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(2rem) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .animate-dialog {
+    animation: gm-dialog-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Cinta de tecnologías: dos copias idénticas y un desplazamiento de -50%,
+     que es exactamente el ancho de una copia — el bucle no tiene costura. */
+  @keyframes gm-ticker {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .animate-ticker {
+    animation: gm-ticker var(--ticker-duration, 60s) linear infinite;
+    will-change: transform;
+  }
+
+  .ticker-mask {
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+}
