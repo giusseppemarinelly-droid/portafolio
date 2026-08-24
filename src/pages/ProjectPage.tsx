@@ -102,8 +102,11 @@ export function ProjectPage({ project }: { project: Project }) {
         />
 
         <div className="shell">
+          {/* Al ancla de proyectos, no a la portada a secas: se vuelve a la
+              rejilla desde la que se entró, y así la tarjeta de este proyecto
+              está en pantalla para que la transición la empareje con el logo. */}
           <Link
-            to="/"
+            to="/#work"
             morphId={project.id}
             className="group inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.16em] text-muted transition-colors hover:text-ink"
           >

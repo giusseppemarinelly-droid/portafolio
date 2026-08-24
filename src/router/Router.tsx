@@ -29,6 +29,17 @@ type DocumentWithVT = Document & {
 }
 
 /**
+ * Coloca la vista nueva: en la sección que pida el ancla del destino, o al
+ * principio de la página si no hay ancla o el elemento no existe.
+ */
+function placeView(hash: string, behavior: ScrollBehavior) {
+  const target = hash ? document.getElementById(decodeURIComponent(hash.slice(1))) : null
+
+  if (target) target.scrollIntoView({ behavior, block: 'start' })
+  else window.scrollTo({ top: 0, behavior })
+}
+
+/**
  * Aplica el cambio de ruta dentro de una transición de vista si el navegador la
  * soporta.
  *
@@ -38,26 +49,23 @@ type DocumentWithVT = Document & {
  *    tarde, así que sin él el callback terminaría antes de que el DOM hubiese
  *    cambiado y el navegador compararía dos fotogramas idénticos — la transición
  *    se ejecutaría sin que se viese nada.
- * 2. El scroll al principio de la página. Si se reinicia *después*, el navegador
- *    ya ha fotografiado la vista nueva a la altura que tenía la portada y se ve
- *    un salto en cuanto acaba la transición.
+ * 2. La colocación del scroll. Si se hace *después*, el navegador ya ha
+ *    fotografiado la vista nueva a la altura que tenía la anterior y se ve un
+ *    salto en cuanto acaba la transición. Va después del `flushSync` porque el
+ *    ancla de destino todavía no está en el documento antes de pintarlo.
  */
-function applyRoute(update: () => void, resetScroll: boolean) {
+function applyRoute(update: () => void, place: (() => void) | null) {
   const doc = document as DocumentWithVT
 
-  const commit = () => {
-    update()
-    if (resetScroll) window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
-  }
-
   if (typeof doc.startViewTransition !== 'function') {
-    commit()
+    update()
+    place?.()
     return
   }
 
   doc.startViewTransition(() => {
     flushSync(update)
-    if (resetScroll) window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+    place?.()
   })
 }
 
@@ -66,13 +74,29 @@ export function Router({ children }: { children: ReactNode }) {
   const [morphId, setMorphId] = useState<string | null>(null)
 
   const navigate = useCallback<RouterValue['navigate']>((to, options) => {
-    if (to === window.location.pathname) return
+    // El destino puede traer ancla («/#work»). El estado guarda solo la ruta:
+    // quien lo consume decide qué página pintar, y el ancla no es asunto suyo.
+    const cut = to.indexOf('#')
+    const pathname = cut === -1 ? to : to.slice(0, cut)
+    const hash = cut === -1 ? '' : to.slice(cut)
+
+    // Ya estamos en esa página: no hay vista que cambiar, solo queda —si acaso—
+    // desplazarse hasta el ancla, y ahí sí conviene el recorrido suave.
+    if (pathname === window.location.pathname) {
+      if (!hash) return
+      window.history.pushState({}, '', to)
+      placeView(hash, 'smooth')
+      return
+    }
 
     window.history.pushState({}, '', to)
-    applyRoute(() => {
-      if (options && 'morphId' in options) setMorphId(options.morphId ?? null)
-      setPath(to)
-    }, true)
+    applyRoute(
+      () => {
+        if (options && 'morphId' in options) setMorphId(options.morphId ?? null)
+        setPath(pathname)
+      },
+      () => placeView(hash, 'instant' as ScrollBehavior),
+    )
   }, [])
 
   useEffect(() => {
@@ -82,7 +106,7 @@ export function Router({ children }: { children: ReactNode }) {
     // Sin reinicio de scroll: al volver atrás, la posición la restaura el
     // navegador, y pisarla dejaría la portada arriba en vez de donde se estaba.
     const onPop = () => {
-      applyRoute(() => setPath(window.location.pathname), false)
+      applyRoute(() => setPath(window.location.pathname), null)
     }
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
