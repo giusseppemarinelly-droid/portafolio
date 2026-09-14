@@ -140,7 +140,6 @@ export interface Copy {
     copied: string
   }
   footer: {
-    built: string
     rights: string
   }
   a11y: {
@@ -242,7 +241,6 @@ const es: Copy = {
     copied: 'Copiado',
   },
   footer: {
-    built: 'Construido con React, TypeScript y Tailwind CSS.',
     rights: 'Todos los derechos reservados.',
   },
   a11y: {
@@ -344,7 +342,6 @@ const en: Copy = {
     copied: 'Copied',
   },
   footer: {
-    built: 'Built with React, TypeScript and Tailwind CSS.',
     rights: 'All rights reserved.',
   },
   a11y: {
