@@ -1,4 +1,6 @@
 import { useEffect } from 'react'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import { useI18n } from './i18n/LanguageProvider'
 import { useCounters, useReadingProgress, useScrollReveals } from './hooks/useAnime'
 import { projects } from './data/projects'
@@ -48,6 +50,9 @@ export default function App() {
       <Nav />
       <main>{project ? <ProjectPage key={project.id} project={project} /> : <Home />}</main>
       <Footer />
+
+      <Analytics />
+      <SpeedInsights />
     </div>
   )
 }
