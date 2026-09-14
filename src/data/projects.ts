@@ -91,6 +91,7 @@ export const projects: Project[] = [
     no: '02',
     year: '2026',
     status: 'active',
+    link: { href: 'https://github.com/giusseppemarinelly-droid/Romana', label: 'GitHub' },
     stack: [
       'Python',
       'FastAPI',
@@ -295,6 +296,7 @@ export const projects: Project[] = [
     no: '05',
     year: '2026',
     status: 'academic',
+    link: { href: 'https://github.com/giusseppemarinelly-droid/epa-ujap', label: 'GitHub' },
     stack: [
       'React Native',
       'Expo Router',
