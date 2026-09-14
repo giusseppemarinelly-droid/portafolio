@@ -369,6 +369,7 @@ export const projects: Project[] = [
     no: '06',
     year: '2026',
     status: 'academic',
+    link: { href: 'https://github.com/giusseppemarinelly-droid/IANUEVA', label: 'GitHub' },
     stack: ['Python', 'Ollama', 'LLM local', 'ReAct', 'Flask', 'WSL2'],
     arch: [
       { label: 'Interfaz de informes', kind: 'client' },
